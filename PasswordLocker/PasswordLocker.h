@@ -1,3 +1,8 @@
+/*
+	File 		: PasswordLocker - Master Header
+	Last Modify : Dec 13,2019T10:52
+	Author		: MeetinaXD 
+*/
 #ifndef __PWDLK__HEADER__
 #define __PWDLK__HEADER__
 #if (ARDUINO >= 100)
@@ -25,8 +30,8 @@
 #define FUCK_MSG 12
 
 
-#define MAX_WAITTIME 10000 //10 sec
-#define DELAYTIME 2000 //提示信息 屏幕等待时间
+#define MAX_WAITTIME 10000	// Max input wait time (10 sec).
+#define DELAYTIME 2000		// Display message delay time.
 #define UNLOCK 'O'
 #define LOCKINSIDE 'L'
 

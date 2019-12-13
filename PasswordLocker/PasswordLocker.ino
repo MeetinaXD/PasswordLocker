@@ -1,33 +1,32 @@
+/*
+	File 		: PasswordLocker - Master
+	Last Modify : Dec 13,2019T10:52
+	Author		: MeetinaXD 
+*/
+
 #include "./PasswordLocker.h"
 char nowFunction = 0;//现在选择的功能
 
 unsigned long lastPressTime = 0;
 String inputStr = "";
 byte inputStrIndex = 0;
-bool pressed = false;
-char nowUser = '\0';
-// SoftwareSerial DLSerial(6,7);
+bool isPressed = false;
+char nowUser;
 
 Adafruit_Keypad customKeypad = Adafruit_Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
-LiquidCrystal_I2C lcd(0x27,16,2);
+LiquidCrystal_I2C lcd(0x27,16,2); // components : I2C addr, row, col
 
 void setup() {
-
-	// DLSerial.begin(9600); // init SoftSerial
 	lcd.init();
-	lcd.backlight();
+	lcd.backlight(); // enable the light of the Display
 	lcd.clear();
 	customKeypad.begin();
 	printMessage(NORMAL_MSG);
-
-	//设置最左一列为中断按键
-	// attachInterrupt(0,CISP,CHANGE);
-	// doSleep();
 }
 void loop() {
 	// wdt_reset();//记得喂狗
 	if (millis() - lastPressTime > MAX_WAITTIME){
-		if(pressed){
+		if(isPressed){
 			printMessage(OVERTIME_MSG);
 			_delay_ms(DELAYTIME);
 			printMessage(NORMAL_MSG);
@@ -36,34 +35,28 @@ void loop() {
 		lcd.noBacklight();
 		inputStr = "";
 		inputStrIndex = 0;
-		pressed = false;
+		isPressed = false;
 	}
 	customKeypad.tick();
 	while(customKeypad.available()){
 		keypadEvent e = customKeypad.read();
-		// DLSerial.print((char)e.bit.KEY);
-
 		if(e.bit.EVENT == KEY_JUST_PRESSED){
-			pressed = true;
+			isPressed = true;
 			lcd.backlight();
 			switch(e.bit.KEY){
-				case 'A':
-				case 'B':
-				case 'C':
-				case 'D':
+				case 'A':	//user select key 'A'
+				case 'B':	//user select key 'B'
+				case 'C':	//user select key 'C'
+				case 'D':	//user select key 'D'
 					nowUser = (char)e.bit.KEY;
 					inputStr = "";
 					inputStrIndex = 0;
 					printMessage(NORMAL_MSG);
 					break;
-				case '*': //功能键*
-				case '#'://功能键#
-					if (e.bit.KEY == '*'){
-						nowFunction = UNLOCK;
-					}else{
-						nowFunction = LOCKINSIDE;
-					}
-					pressed = false;
+				case '*':	//function key '*'
+				case '#':	//function ket '#'
+					nowFunction = (e.bit.KEY == '*')? UNLOCK: LOCKINSIDE;
+					isPressed = false;
 					passwordEvent(inputStr);
 					inputStr = "";
 					inputStrIndex = 0;
@@ -91,11 +84,9 @@ void loop() {
 					inputStrIndex++;
 					break;
 			}
-			// DLSerial.println(" pressed");
 			tone(BELLPIN,1000,50);
 			lastPressTime = millis();
 		}
-			// else if(e.bit.EVENT == KEY_JUST_RELEASED) DLSerial.println(" released");
 	}
 	_delay_ms(10);
 }
@@ -112,7 +103,7 @@ String sendCommand(char operate,char user,String command){
 		Wire.write(char_array[i++]);
 	Wire.endTransmission();
 	//等待从机开锁程序回复
-	delay(50);
+	_delay_ms(50);
 	Wire.requestFrom(KEYPAD_ADDR, 6);
 	String s;
 	while (Wire.available() > 0){
@@ -144,9 +135,8 @@ void passwordEvent(String str){
 		_delay_ms(DELAYTIME);
 		printMessage(NORMAL_MSG);
 	}
-	pressed = true;
+	isPressed = true;
 }
-
 void printMessage(byte index){
 	lcd.clear();
 	lcd.setCursor(0,0);
@@ -154,14 +144,3 @@ void printMessage(byte index){
 	lcd.setCursor(0,1);
 	lcd.print(msg[index + 1]);
 }
-
-// void CISP(){
-// 	customKeypad.tick();
-// 	if(customKeypad.available()){
-// 		keypadEvent e = customKeypad.read();
-// 		if(e.bit.KEY == '*' && isWokeup == false){
-// 			digitalWrite(13,HIGH);
-// 			doWakeUp();
-// 		}
-// 	}
-// }
