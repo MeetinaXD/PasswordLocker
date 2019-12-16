@@ -41,6 +41,7 @@
 #define ROWS 4 // rows
 #define COLS 4 // columns
 #define KEYPAD_ADDR 0xFA
+
 //define the symbols on the buttons of the keypads
 char keys[ROWS][COLS] = {
 	{'1','2','3','A'},
@@ -48,12 +49,7 @@ char keys[ROWS][COLS] = {
 	{'7','8','9','C'},
 	{'*','0','#','D'}
 };
-const char *password[] = {
-	"876318",
-	"215404",
-	"310316",
-	"3119000679"
-};
+
 // bool isWokeup = false;
 byte rowPins[ROWS] = {6, 7, 8, 9}; //connect to the row pinouts of the keypad
 byte colPins[COLS] = {0, 1, 2, 3}; //connect to the column pinouts of the keypad
@@ -72,6 +68,5 @@ const char *msg[] = {	" Press password ",
 						" FUCK YOU BITCH ",
 						"GET OUT OF HERE!"
 };
-
 
 #endif /* __PWDLK__HEADER__ */

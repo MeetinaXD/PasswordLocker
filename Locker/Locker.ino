@@ -22,24 +22,28 @@
 #define KEYPAD_ADDR 0xFA	// Master I2C address
 
 #define MAX_WAITTIME 10000	// Max input wait time (10 sec).
+
 //States defination.
 #define WRONG  0
 #define OPENED 1
 #define LOCKED 2
+
+// the command's length is 6 bytes.
 const char *res[] = {"Wrong!","Ulcked'","Locked"}; // Slave response commands.
 char state = 0;
 String resState;
 unsigned long lastPressTime = 0;
-const char *password[] = {	// all the passwords of Users.
-	"876318",
-	"215404",
-	"310316",
-	"3119000679"
+const char *password[4] = {	// all the passwords of Users.
+	"123456",
+	"123456",
+	"123456",
+	"123456"
 };
 Servo myservo;
 bool ledState = false;	// Led in pin13.
 bool isUnlocked = false;
 SoftwareSerial mySerial(10, 11); // RX, TX
+
 void setup(){
 	mySerial.begin(9600);
 	myservo.attach(3);
@@ -50,6 +54,7 @@ void setup(){
   	pinMode(13,OUTPUT);
   	doLock();
 }
+
 void loop(){
 	ledState = !ledState;
 	digitalWrite(13,ledState);
@@ -60,6 +65,8 @@ void loop(){
 			isUnlocked = false;
 		}
 }
+
+// when receive the command from Master.
 void receiveEvent(int length){
 	mySerial.println(length);
 	char *chArr = (char*)malloc(length + 1);
@@ -89,12 +96,14 @@ void receiveEvent(int length){
 	free(chArr);
 	return;
 }
+
 int getArrLength(char *p){
 	int len = 0;
 	while(*(p++) != '\0')
 		len++;
 	return len;
 }
+
 bool comparePassword(char user, char *pwd){
 	int la = strlen(password[user]);
 	int lb = strlen(pwd);
@@ -107,12 +116,15 @@ bool comparePassword(char user, char *pwd){
 	}
 	return true;
 }
-void lockInside(){
+
+void lockInside(){ // do nothing now.
 	state = LOCKED;
 }
+
 void doLock(){
 	myservo.write(140);
 }
+
 void doUnlock(){
 	state = OPENED;
 	myservo.write(65);

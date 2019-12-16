@@ -38,16 +38,16 @@ void loop() {
 		isPressed = false;
 	}
 	customKeypad.tick();
-	while(customKeypad.available()){
+	while(customKeypad.available()){// user press the key.
 		keypadEvent e = customKeypad.read();
 		if(e.bit.EVENT == KEY_JUST_PRESSED){
 			isPressed = true;
 			lcd.backlight();
 			switch(e.bit.KEY){
-				case 'A':	//user select key 'A'
-				case 'B':	//user select key 'B'
-				case 'C':	//user select key 'C'
-				case 'D':	//user select key 'D'
+				case 'A':	//user select the key 'A'
+				case 'B':	//user select the key 'B'
+				case 'C':	//user select the key 'C'
+				case 'D':	//user select the key 'D'
 					nowUser = (char)e.bit.KEY;
 					inputStr = "";
 					inputStrIndex = 0;
@@ -91,6 +91,7 @@ void loop() {
 	_delay_ms(10);
 }
 
+// send command to the Slave
 String sendCommand(char operate,char user,String command){
 	char char_array[command.length() + 1];
 	int len = command.length();
@@ -112,6 +113,7 @@ String sendCommand(char operate,char user,String command){
 	return s;
 }
 
+// when slave resoponse to the Master.
 void passwordEvent(String str){
 	if (nowUser == 0){
 		printMessage(UNSELECTED_USR_MSG);
