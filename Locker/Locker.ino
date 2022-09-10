@@ -1,7 +1,7 @@
 /*
 	File 		: PasswordLocker - Slave
 	Last Modify : Dec 13,2019T10:52
-	Author		: MeetinaXD 
+	Author		: MeetinaXD
 */
 
 //门内芯片作为从机
@@ -21,7 +21,7 @@
 #include <SoftwareSerial.h>
 #define KEYPAD_ADDR 0xFA	// Master I2C address
 
-#define MAX_WAITTIME 10000	// Max input wait time (10 sec).
+#define MAX_WAITTIME 2000	// Max input wait time (10 sec).
 
 //States defination.
 #define WRONG  0
@@ -50,7 +50,7 @@ void setup(){
 	myservo.write(0);
 	Wire.begin(KEYPAD_ADDR);
 	Wire.onReceive(receiveEvent);
-  	Wire.onRequest(requestEvent); 
+  	Wire.onRequest(requestEvent);
   	pinMode(13,OUTPUT);
   	doLock();
 }
@@ -76,13 +76,13 @@ void receiveEvent(int length){
 		chArr[i++] = Wire.read();
 		mySerial.print(chArr[i - 1]);
 	}
-	
+
 	char operate = chArr[0]; //操作命令
 	char user = chArr[1] - 'A'; //选择的用户
 	if (user < 0 || user > 3) return; //防止越界
 	mySerial.print("selected user = ");
 	mySerial.println(chArr[1]);
-	mySerial.print("input password = ")
+	mySerial.print("input password = ");
 	if (!comparePassword(user,chArr + 2)){ //如果密码和用户不匹配
 		mySerial.println(",password pass.");
 		state = WRONG;
